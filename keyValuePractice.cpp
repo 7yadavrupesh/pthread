@@ -3,11 +3,12 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define NUMBEROFTHREADS 1
+#define NUMBEROFTHREADS 5
 using namespace std;
 
 pthread_mutex_t mutex;
 pthread_key_t	thrKey;
+pthread_barrier_t barrier;
 static int count =0;
 
 typedef struct{
@@ -41,6 +42,8 @@ void foo1(){
 void *threadFunction(void * arg){
 	globalData * gdata = getMemory();
 	pthread_setspecific(thrKey,gdata);
+	cout << "threadArea";
+	pthread_barrier_wait(&barrier);
 	foo1();
 	return NULL;
 }
@@ -49,6 +52,7 @@ int main(){
 	
 	pthread_t thrHandle[NUMBEROFTHREADS];
 	int i=0;
+	pthread_barrier_init(&barrier,NULL,5);
 	pthread_key_create(&thrKey,DistructorFunc);
 	for(i=0;i<NUMBEROFTHREADS;i++){
 		pthread_create(&thrHandle[i], NULL, threadFunction, NULL);
