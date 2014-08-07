@@ -6,40 +6,36 @@
 #include <errno.h>
 #include <string.h>
 
+
 using namespace std;
 static int numOfThreads = 0;
 pthread_mutex_t mutex;
+#define NUMBEROFTHREADS 5
 
-void *thrCall(void * arg){
-	pthread_mutex_lock(&mutex);
-	numOfThreads++;
-	if(numOfThreads == 0)
-		cout << "its zero",exit(0);
-	cout << numOfThreads << " Reached!" << endl;
-	pthread_mutex_unlock(&mutex);
-}
-
+int critical;
 void * master(void *arg){
-	int allCount = 1;
-	pthread_t **thrHandle = (pthread_t **)malloc(sizeof(pthread_t));
-	for(;;)
-	{
-		cout << "calling" << endl;
-		if(pthread_create(&*thrHandle[allCount],NULL,thrCall,NULL) != 0){
-			cout << "free thread" << endl;
-			printf("%s\n",strerror(errno) );
-		}
-		if(!pthread_join(*thrHandle[allCount],NULL))
-		numOfThreads--;
-		thrHandle = (pthread_t **)realloc(thrHandle,(sizeof(pthread_t)*allCount));
-		printf("%s\n",strerror(errno) );
-		cout << sizeof(pthread_t)*allCount;
-		allCount++;
-	}
+		
+		int val = *(int*)arg;
+		int result = pthread_mutex_lock(&mutex);
+		if(result == 0 )
+		{
+			cout << "entered";
+			fflush(stdout);
+			sleep(2);
+			critical = val;
+			pthread_mutex_unlock(&mutex);
+			cout << "out";
+		}else
+		cout << "ebusy";
 }
 
 int main(){
-	pthread_t masterThread;
-	pthread_create(&masterThread,NULL,master,NULL);
-	pthread_join(masterThread,NULL);
+	pthread_t masterThread[NUMBEROFTHREADS];
+	int *i = (int*)malloc(sizeof(int));
+	
+	for(*i =0; *i<NUMBEROFTHREADS; *i++)
+		pthread_create(&masterThread[*i],NULL,master,(void *)i);
+
+	for(*i =0; *i<NUMBEROFTHREADS; *i++)
+		pthread_join(masterThread[*i],NULL);
 }
