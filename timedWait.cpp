@@ -11,11 +11,10 @@ pthread_cond_t condition;
 pthread_mutex_t mutex;
 int ii = 0, rc;
 int timedWaitApplied =0;
-#define WAIT_TIME_SECONDS       5
+#define WAIT_TIME_SECONDS       3
 
 void *producer(void *arg)
 {
-	
 	for(;;)
 	{
 		pthread_mutex_lock(&mutex);
