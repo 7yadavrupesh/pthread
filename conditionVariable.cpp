@@ -13,58 +13,58 @@ int ii = 0;
 
 void *producer(void *arg)
 {
-  for(;;)
-  {
-    pthread_mutex_lock(&mutex);
-    cout << "producer locked" << endl;
-    if(ii < 5 ){
-      cout << "producer waiting" << endl;
-      pthread_cond_wait(&condition,&mutex);
-      cout << "after waiting" << endl;
-    }
-    else 
+    for(;;)
     {
-      cout << "P " << ii << endl;
-      ii++;
+        pthread_mutex_lock(&mutex);
+        cout << "producer locked" << endl;
+        if(ii < 5 ){
+            cout << "producer waiting" << endl;
+            pthread_cond_wait(&condition,&mutex);
+            cout << "after waiting" << endl;
+        }
+        else 
+        {
+            cout << "P " << ii << endl;
+            ii++;
+        }
+        cout << "producer mutex Unlocking" << endl;
+        pthread_mutex_unlock(&mutex);
+        if(ii >= 10){
+            return 0;
+        }
     }
-    cout << "producer mutex Unlocking" << endl;
-    pthread_mutex_unlock(&mutex);
-    if(ii >= 10){
-      return 0;
-    }
-  }
 }
 
 void * consumer(void *arg){
-  for(;;)
-  {
-    pthread_mutex_lock(&mutex); 
-    cout << "consumer locked" << endl;
-
-    if(ii >= 5)
+    for(;;)
     {
-      cout << "consumer signal" << endl;
-      pthread_cond_signal(&condition);
+        pthread_mutex_lock(&mutex); 
+        cout << "consumer locked" << endl;
+
+        if(ii >= 5)
+        {
+            cout << "consumer signal" << endl;
+            pthread_cond_signal(&condition);
+        }
+        else{
+            cout <<  "C " <<  ii << endl;
+            ii++;
+        }
+        pthread_mutex_unlock(&mutex);
+        sleep(1);
+        cout << "consumer unlocked" << endl;
+        if(ii >= 10){
+            return 0;
+        }
     }
-    else{
-      cout <<  "C " <<  ii << endl;
-      ii++;
-    }
-    pthread_mutex_unlock(&mutex);
-    sleep(1);
-    cout << "consumer unlocked" << endl;
-    if(ii >= 10){
-      return 0;
-    }
-  }
 }
 int main(int argc, char *argv[])
 {
-  pthread_t proThrHanle, conThrHandle;
+    pthread_t proThrHanle, conThrHandle;
 
-  pthread_create(&proThrHanle,NULL,producer,NULL);
-  pthread_create(&conThrHandle,NULL, consumer,NULL);
+    pthread_create(&proThrHanle,NULL,producer,NULL);
+    pthread_create(&conThrHandle,NULL, consumer,NULL);
 
-  pthread_join(proThrHanle,NULL);
-  pthread_join(conThrHandle,NULL);
+    pthread_join(proThrHanle,NULL);
+    pthread_join(conThrHandle,NULL);
 }
