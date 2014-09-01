@@ -22,7 +22,7 @@ template <class T> class Pool
 				while (data.size()) data.pop();
 				mtx.unlock();
 			}
-		size_t size() const
+		size_t size()
 			{
 				mtx.lock();
 				size_t result = data.size();

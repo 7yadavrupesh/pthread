@@ -1,0 +1,14 @@
+C1		    = g++
+CFLAGS		= -c -Wall
+LDFLAGS		= -pthread 
+SOURCES		= Consumer.cpp Mutex.cpp Producer.cpp Thread.cpp tutorial6.cpp
+OBJECTS		= $(SOURCES:.cpp=.o)
+TARGET		= mutex
+
+all: $(SOURCES) $(TARGET)
+
+$(TARGET): $(OBJECTS) 
+$(C1) $(LDFLAGS) $(OBJECTS) -o $@
+
+clean:
+	rm -rf *o $(OBJECTS)
